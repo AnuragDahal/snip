@@ -1,14 +1,14 @@
-from fastapi import APIRouter,status,Body
+from fastapi import APIRouter,status,Query
 from starlette.responses import RedirectResponse
 from ..core.database import urls_collection
 from pydantic import HttpUrl
 from ..handlers.Url.urlhandler import HandleUrl
 from ..handlers.exception import ErrorHandler
 
-router= APIRouter()
+router= APIRouter(tags=["URL"])
 
 @router.post("/shorten",status_code=status.HTTP_201_CREATED)
-async def shorten_url(long_url: HttpUrl = Body(...)):
+async def shorten_url(long_url: HttpUrl=Query(...)):
     """
     Shorten the long url to a short url
     """

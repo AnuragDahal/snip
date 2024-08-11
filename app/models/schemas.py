@@ -28,9 +28,3 @@ class UserDetails(BaseModel):
 
 class UpdateUserEmail(BaseModel):
     email: EmailStr
-
-
-class Urls(BaseModel):
-    long_url: HttpUrl
-    short_url: Optional[HttpUrl] = None
-    
