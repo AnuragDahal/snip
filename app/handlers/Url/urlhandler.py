@@ -4,6 +4,8 @@ from pydantic   import HttpUrl
 from ..exception import ErrorHandler
 import secrets
 import string
+from ...utils.envutils import Environment
+env= Environment()
 
 class HandleUrl:
     @staticmethod
@@ -24,10 +26,10 @@ class HandleUrl:
             # Generate unique string
             unique_strings= HandleUrl.generate_unique_string()
             new_url=await urls_collection.insert_one({"long_url":str(url),"short_url":f"{unique_strings}"})            
-            return {"short_url":f"http://localhost:8000/{unique_strings}"}
+            return {"short_url":f"{env.DOMAIN}{unique_strings}"}
                 
         except Exception as e:
-             return {"error":str(e)}
+             return ErrorHandler.Error(str(e))
          
     @staticmethod
     async def HandleUrlRedirection(unique_string: str):
@@ -40,4 +42,5 @@ class HandleUrl:
                 return {"long_url":url["long_url"]}
             return ErrorHandler.NotFound("Url does not exists or is invaild")
         except Exception as e:
-            return {"error":str(e)}
+            return ErrorHandler.Error(str(e))
+        

@@ -18,3 +18,4 @@ class Environment():
         self.OAUTHSECRET_KEY = os.environ.get('OAUTHSECRET_KEY')
         self.GMAIL_USER = os.environ.get('GMAIL_USER')
         self.APP_SPECIFIC_PASS = os.environ.get("APP_SPECIFIC_PASS")
+        self.DOMAIN = os.environ.get("DOMAIN")
