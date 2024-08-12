@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 
 env = Environment()
 
-app = FastAPI(title="CONNECTIFY", version="0.1.0")
+app = FastAPI(title="Shortify", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -41,7 +41,7 @@ except Exception as e:
 
 @app.get('/')
 def root():
-    return {"message": "Welcome to Webservice API, navigate to /docs for documentation."}
+    return {"message": "Welcome to Shortify API, navigate to /docs for documentation."}
 
 
 @app.get('/home')
