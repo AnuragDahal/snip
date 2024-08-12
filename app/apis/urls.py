@@ -27,3 +27,4 @@ async def redirect_to_long_url(short_url: str):
         return RedirectResponse(url=result["long_url"])
     else:
         return ErrorHandler.NotFound("Url does not exists or is invalid")
+    
