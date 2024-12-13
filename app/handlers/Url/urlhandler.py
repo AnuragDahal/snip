@@ -4,7 +4,9 @@ from ..exception import ErrorHandler
 import secrets
 import string
 from ...utils.envutils import Environment
-import socket
+import aiodns
+from fastapi import HTTPException
+
 
 env = Environment()
 
@@ -23,19 +25,33 @@ class HandleUrl:
         """
         try:
             domain = url.host
+
+        # Create DNS resolver
+            resolver = aiodns.DNSResolver()
+
+        # Perform async DNS lookup
             try:
-                # Perform DNS resolution
-                socket.gethostbyname(domain)
-            except socket.gaierror:
-                return ErrorHandler.NotFound("Domain does not exist or is unreachable.")
+                await resolver.query(domain, 'A')
+            except Exception:
+                raise HTTPException(
+                    status_code=404, detail="Domain does not exist or is unreachable")
 
-            # Generate unique string
+        # Generate unique string
             unique_strings = HandleUrl.generate_unique_string()
-            new_url = await urls_collection.insert_one({"long_url": str(url), "short_url": f"{unique_strings}"})
-            return {"short_url": f"{env.DOMAIN}{unique_strings}"}
 
+        # MongoDB operation
+            new_url = await urls_collection.insert_one({
+                "long_url": str(url),
+                "short_url": unique_strings
+            })
+
+            return {
+                "short_url": f"{env.DOMAIN}{unique_strings}"
+            }
+        except HTTPException as he:
+            raise he
         except Exception as e:
-            return ErrorHandler.Error(str(e))
+            return ErrorHandler.Forbidden(str(e))
 
     @staticmethod
     async def HandleUrlRedirection(unique_string: str):
