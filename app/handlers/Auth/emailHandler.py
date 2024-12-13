@@ -1,10 +1,8 @@
 import smtplib
-from fastapi import Request
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from ...utils.envutils import Environment
 import random
-from jose import jwt, JWTError
 from ...core.database import otp_collection, user_collection
 from ...handlers.exception import ErrorHandler
 from datetime import datetime, timezone

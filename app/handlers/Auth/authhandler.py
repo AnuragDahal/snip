@@ -1,7 +1,6 @@
-from fastapi import Depends, Response, Request
+from fastapi import Depends, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
-from jose import jwt
 from datetime import timedelta, datetime, timezone
 from ...utils.envutils import Environment
 from ..exception import ErrorHandler

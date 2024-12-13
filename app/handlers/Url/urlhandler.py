@@ -37,7 +37,6 @@ class HandleUrl:
         except Exception as e:
             return ErrorHandler.Error(str(e))
 
-
     @staticmethod
     async def HandleUrlRedirection(unique_string: str):
         """

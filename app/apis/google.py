@@ -1,4 +1,4 @@
-from fastapi import HTTPException, APIRouter, Request
+from fastapi import APIRouter, Request
 from starlette.responses import RedirectResponse
 from ..config.oauth_config import google, generate_state, validate_token
 from ..handlers.User.userhandler import Validate

@@ -2,7 +2,6 @@ from ...models import schemas
 from ...core.database import user_collection
 from ..exception import ErrorHandler
 from ...utils.passhashutils import Encrypt
-from typing import Optional
 from ...utils.passhashutils import Encrypt
 from ..Auth.authhandler import Validate
 
