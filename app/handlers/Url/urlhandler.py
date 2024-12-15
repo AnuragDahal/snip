@@ -4,9 +4,10 @@ from ..exception import ErrorHandler
 import secrets
 import string
 from ...utils.envutils import Environment
-import aiodns
+import dns.resolver
 from fastapi import HTTPException
-
+import asyncio
+from functools import partial
 
 env = Environment()
 
@@ -19,6 +20,31 @@ class HandleUrl:
         return shorted_string
 
     @staticmethod
+    async def check_domain(domain: str):
+        """
+        Perform DNS lookup using dns.resolver instead of aiodns
+        """
+        try:
+            # Run DNS query in a thread pool to avoid blocking
+            loop = asyncio.get_running_loop()
+            resolver = dns.resolver.Resolver()
+            # Set a timeout to avoid hanging
+            resolver.timeout = 3
+            resolver.lifetime = 3
+
+            # Run the DNS query in a thread pool
+            await loop.run_in_executor(
+                None,
+                partial(resolver.resolve, domain, 'A')
+            )
+            return True
+        except Exception:
+            raise HTTPException(
+                status_code=404,
+                detail="Domain does not exist or is unreachable"
+            )
+
+    @staticmethod
     async def HandleUrlShortening(url: HttpUrl):
         """
         Shorten the long URL to a short URL.
@@ -26,20 +52,13 @@ class HandleUrl:
         try:
             domain = url.host
 
-        # Create DNS resolver
-            resolver = aiodns.DNSResolver()
+            # Check domain existence
+            await HandleUrl.check_domain(domain)
 
-        # Perform async DNS lookup
-            try:
-                await resolver.query(domain, 'A')
-            except Exception:
-                raise HTTPException(
-                    status_code=404, detail="Domain does not exist or is unreachable")
-
-        # Generate unique string
+            # Generate unique string
             unique_strings = HandleUrl.generate_unique_string()
 
-        # MongoDB operation
+            # MongoDB operation
             new_url = await urls_collection.insert_one({
                 "long_url": str(url),
                 "short_url": unique_strings
@@ -62,6 +81,6 @@ class HandleUrl:
             url = await urls_collection.find_one({"short_url": unique_string})
             if url:
                 return {"long_url": url["long_url"]}
-            return ErrorHandler.NotFound("Url does not exists or is invaild")
+            return ErrorHandler.NotFound("Url does not exists or is invalid")
         except Exception as e:
             return ErrorHandler.Error(str(e))
